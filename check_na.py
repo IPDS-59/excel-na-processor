@@ -13,6 +13,9 @@ data processing rules.
 """
 
 import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.styles import Alignment
+from openpyxl.utils import get_column_letter
 import os
 import glob
 import re
@@ -130,6 +133,18 @@ def process_excel_data(ref_file, derived_file, output_file, kab_code, ref_table,
         
         # Write template data to 'template' sheet
         df_template.to_excel(writer, sheet_name='template', index=False)
+        
+        for (sheet, df) in [['acuan', df_ref_filtered], ['riil', df_derived_filtered], ['template', df_template]]:
+            worksheet = writer.sheets[sheet]
+            
+            for idx, col in enumerate(df.columns):
+                column_letter = get_column_letter(idx + 1)
+                max_length = max(df[col].astype(str).map(len).max(), len(str(col)))
+                adjusted_width = min(max_length + 2, 50)  # Set a maximum width of 50
+                worksheet.column_dimensions[column_letter].width = adjusted_width
+
+                for cell in worksheet[column_letter]:
+                    cell.alignment = Alignment(wrap_text=True, vertical='center', horizontal='center')
 
     print(f"Processed data saved to {output_file}")
 
