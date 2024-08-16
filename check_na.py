@@ -13,7 +13,6 @@ data processing rules.
 """
 
 import pandas as pd
-from openpyxl import load_workbook
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 import os
